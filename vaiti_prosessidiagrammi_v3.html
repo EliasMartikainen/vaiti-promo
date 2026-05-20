@@ -1,0 +1,460 @@
+<!--
+  VAITI PROSESSIDIAGRAMMI v3
+  Lisää vaiti_myyntisivu_v5.html:ään .intro-osion jälkeen, ennen .features-osiota.
+  Kopioi <style> sivun <style>-tagiin ja HTML+<script> bodyyn.
+-->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&display=swap');
+
+.sk3-section {
+  padding: var(--gap) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.sk3-head {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.sk3-head h2 {
+  font-size: clamp(1.6rem,3vw,2.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: .4rem;
+  color: #1c2128;
+}
+.sk3-head p {
+  font-size: .95rem;
+  color: #3e4a55;
+}
+
+/* Two-column layout */
+.sk3-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media(max-width:640px){
+  .sk3-grid { grid-template-columns: 1fr; }
+}
+
+/* Each column */
+.sk3-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Column label */
+.sk3-col-label {
+  font-family: 'Caveat', cursive;
+  font-size: 19px;
+  font-weight: 700;
+  text-align: center;
+  padding: .5rem;
+  border-radius: 3px;
+  margin-bottom: 1.25rem;
+  letter-spacing: .02em;
+}
+.sk3-col-label.bad {
+  background: #fde8e8;
+  color: #7a1a1a;
+  border: 2px solid #e74c3c;
+}
+.sk3-col-label.good {
+  background: #e5f5ec;
+  color: #145a26;
+  border: 2px solid #27ae60;
+}
+
+/* Step row: icon + text */
+.sk3-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: .9rem .5rem;
+  opacity: 0;
+  transform: translateX(var(--tx, -10px));
+  transition: opacity .4s ease, transform .4s ease;
+  position: relative;
+}
+.sk3-col.good .sk3-step { --tx: 10px; }
+.sk3-step.show { opacity: 1; transform: translateX(0); }
+
+/* Icon area */
+.sk3-icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sk3-icon svg {
+  width: 46px;
+  height: 46px;
+  overflow: visible;
+}
+
+/* Text */
+.sk3-text {
+  flex: 1;
+  padding-top: .2rem;
+}
+.sk3-text strong {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1c2128;
+  line-height: 1.2;
+  margin-bottom: .2rem;
+}
+.sk3-text span {
+  font-size: .83rem;
+  color: #3e4a55;
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* Connector between steps */
+.sk3-conn {
+  display: flex;
+  justify-content: flex-start;
+  padding-left: 26px;
+  height: 20px;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.sk3-conn.show { opacity: 1; }
+.sk3-conn svg { overflow: visible; }
+
+/* Verdict */
+.sk3-verdict {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: .75rem 1rem;
+  border-radius: 3px;
+  margin-top: .5rem;
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.sk3-verdict.show { opacity: 1; transform: translateY(0); }
+.sk3-verdict.bad {
+  background: #fde8e8;
+  border: 2px dashed #e74c3c;
+  color: #6b1414;
+}
+.sk3-verdict.good {
+  background: #e5f5ec;
+  border: 2px dashed #27ae60;
+  color: #145a26;
+}
+.sk3-verdict .vd-sub {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 2px;
+  opacity: .85;
+}
+
+.sk3-restart {
+  font-family: 'Outfit', sans-serif;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  padding: .4rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--faint);
+  margin-top: 1.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: color .2s, border-color .2s;
+}
+.sk3-restart:hover { color: var(--sub); border-color: var(--sub); }
+
+@keyframes sk3-pop   { 0%{transform:scale(.5) rotate(-6deg)} 65%{transform:scale(1.12) rotate(2deg)} 100%{transform:scale(1) rotate(0)} }
+@keyframes sk3-shake { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-4deg)} 75%{transform:rotate(4deg)} }
+.sk3-icon.do-pop   { animation: sk3-pop .45s ease forwards; }
+.sk3-icon.do-shake { animation: sk3-shake .5s ease-in-out 2; }
+</style>
+
+<div class="sk3-section">
+  <div class="container">
+
+    <div class="sk3-head">
+      <span class="intro-label">Miksi VAITI on olemassa</span>
+      <h2>Miten varaus tehdään tänään</h2>
+      <p>Pienillä seurakunnilla on yleensä Excel, WhatsApp tai ei mitään.</p>
+    </div>
+
+    <div class="sk3-grid">
+
+      <!-- LEFT: Nykytilanne -->
+      <div class="sk3-col bad">
+        <div class="sk3-col-label bad">Ilman VAITIa</div>
+
+        <!-- Step 1: puhelin -->
+        <div class="sk3-step" id="s1">
+          <div class="sk3-icon" id="s1i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Hand-drawn phone -->
+              <path d="M14,8 Q13,6 15,5 L19,4 Q21,4 22,6 L24,12 Q24,14 22,15 L20,16 Q19,16 20,18 Q23,24 28,29 Q30,31 31,30 L33,28 Q35,27 36,28 L41,31 Q43,32 42,34 L41,38 Q40,40 38,40 Q24,40 12,16 Q8,10 10,8 L14,8Z" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Signal waves -->
+              <path d="M30,6 Q33,6 35,8 Q37,10 37,13" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+              <path d="M30,9 Q32,9 33,11 Q34,13 34,14" stroke="#c0392b" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Hautaustoimisto soittaa</strong>
+            <span>Kysyy onko vapaita paikkoja. Joku etsii vastausta — ehkä Excel on auki, ehkä ei.</span>
+          </div>
+        </div>
+
+        <div class="sk3-conn" id="s1c">
+          <svg width="2" height="20" viewBox="0 0 2 20">
+            <path d="M1,0 Q0,5 1,10 Q2,15 1,20" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3 2" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 2: Excel/WhatsApp -->
+        <div class="sk3-step" id="s2">
+          <div class="sk3-icon" id="s2i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Hand-drawn spreadsheet -->
+              <rect x="6" y="5" width="28" height="34" rx="2" stroke="#217346" stroke-width="1.8"/>
+              <path d="M6,13 L34,13" stroke="#217346" stroke-width="1.2"/>
+              <path d="M6,20 L34,20" stroke="#217346" stroke-width="1.2"/>
+              <path d="M6,27 L34,27" stroke="#217346" stroke-width="1.2"/>
+              <path d="M18,5 L18,39" stroke="#217346" stroke-width="1.2"/>
+              <!-- X marks = unknown data -->
+              <path d="M22,15 L28,19 M28,15 L22,19" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M22,22 L28,26 M28,22 L22,26" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+              <!-- Question mark -->
+              <text x="37" y="16" font-family="sans-serif" font-size="16" fill="#c0392b" font-weight="700">?</text>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Excel tai WhatsApp-ryhmä</strong>
+            <span>Tieto on jossakin taulukossa tai viestissä. Onko se ajan tasalla? Kukaan ei tiedä varmasti.</span>
+          </div>
+        </div>
+
+        <div class="sk3-conn" id="s2c">
+          <svg width="2" height="20" viewBox="0 0 2 20">
+            <path d="M1,0 Q2,5 0,10 Q-1,15 1,20" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3 2" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 3: kävelevä ihminen -->
+        <div class="sk3-step" id="s3">
+          <div class="sk3-icon" id="s3i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Stick figure walking -->
+              <circle cx="23" cy="7" r="4" stroke="#2471a3" stroke-width="1.8"/>
+              <!-- Body -->
+              <path d="M23,11 L22,22" stroke="#2471a3" stroke-width="1.8" stroke-linecap="round"/>
+              <!-- Left leg -->
+              <path d="M22,22 L17,34" stroke="#2471a3" stroke-width="1.8" stroke-linecap="round"/>
+              <!-- Right leg -->
+              <path d="M22,22 L26,32 L30,34" stroke="#2471a3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Arms -->
+              <path d="M22,14 L15,20 M22,14 L30,18" stroke="#2471a3" stroke-width="1.8" stroke-linecap="round"/>
+              <!-- Arrow showing direction -->
+              <path d="M32,28 L40,28 M37,25 L40,28 L37,31" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Joku käy tarkistamassa</strong>
+            <span>Seurakuntatalolta lähdetään fyysisesti kylmiölle katsomaan tilanne. Vie aikaa — etenkin talvella.</span>
+          </div>
+        </div>
+
+        <div class="sk3-conn" id="s3c">
+          <svg width="2" height="20" viewBox="0 0 2 20">
+            <path d="M1,0 Q0,5 1,10 Q2,15 1,20" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3 2" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 4: kylmähuone -->
+        <div class="sk3-step" id="s4">
+          <div class="sk3-icon" id="s4i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Hand-drawn cold storage door -->
+              <rect x="8" y="6" width="26" height="34" rx="2" stroke="#c0392b" stroke-width="1.8"/>
+              <!-- Door handle -->
+              <path d="M30,20 L30,26" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
+              <!-- Snowflake inside -->
+              <path d="M21,15 L21,31 M14,23 L28,23 M15,17 L27,29 M27,17 L15,29" stroke="#2471a3" stroke-width="1.2" stroke-linecap="round"/>
+              <!-- X = full/unknown -->
+              <text x="32" y="12" font-family="sans-serif" font-size="16" fill="#c0392b" font-weight="700">!</text>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Tilanne selviää vasta perillä</strong>
+            <span>Paikka saattaa olla täynnä. Tai vapaa. Tieto ei ole ollut kenelläkään ennen tätä hetkeä.</span>
+          </div>
+        </div>
+
+        <div class="sk3-verdict bad" id="sv1">
+          Aikaa kuluu. Tulos epävarma.
+          <span class="vd-sub">Matka voi olla turha. Eikä kukaan tiedä kokonaistilannetta.</span>
+        </div>
+      </div>
+
+      <!-- RIGHT: VAITIn kanssa -->
+      <div class="sk3-col good">
+        <div class="sk3-col-label good">VAITIn kanssa</div>
+
+        <!-- Step 1: läppäri -->
+        <div class="sk3-step" id="g1">
+          <div class="sk3-icon" id="g1i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Hand-drawn laptop -->
+              <rect x="8" y="8" width="30" height="20" rx="2" stroke="#27ae60" stroke-width="1.8"/>
+              <!-- Screen content = map/grid -->
+              <rect x="11" y="11" width="10" height="7" rx="1" stroke="#27ae60" stroke-width="1" fill="#e5f5ec"/>
+              <rect x="23" y="11" width="12" height="7" rx="1" stroke="#1e8449" stroke-width="1" fill="#c0dd97"/>
+              <rect x="11" y="20" width="10" height="5" rx="1" stroke="#e74c3c" stroke-width="1" fill="#fde8e8"/>
+              <rect x="23" y="20" width="12" height="5" rx="1" stroke="#27ae60" stroke-width="1" fill="#e5f5ec"/>
+              <!-- Base -->
+              <path d="M4,28 L42,28 Q42,32 23,32 Q4,32 4,28Z" stroke="#27ae60" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Avaa VAITI selaimessa</strong>
+            <span>Tietokoneella, tabletilla tai puhelimella. Mistä tahansa. Ei asennuksia.</span>
+          </div>
+        </div>
+
+        <div class="sk3-conn" id="g1c">
+          <svg width="2" height="20" viewBox="0 0 2 20">
+            <path d="M1,0 L1,20" stroke="#27ae60" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 2: tilakartta -->
+        <div class="sk3-step" id="g2">
+          <div class="sk3-icon" id="g2i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Grid of slots -->
+              <rect x="5" y="8" width="10" height="10" rx="2" fill="#e5f5ec" stroke="#27ae60" stroke-width="1.5"/>
+              <rect x="18" y="8" width="10" height="10" rx="2" fill="#fff9e5" stroke="#f39c12" stroke-width="1.5"/>
+              <rect x="31" y="8" width="10" height="10" rx="2" fill="#e5f5ec" stroke="#27ae60" stroke-width="1.5"/>
+              <rect x="5" y="21" width="10" height="10" rx="2" fill="#fde8e8" stroke="#e74c3c" stroke-width="1.5"/>
+              <rect x="18" y="21" width="10" height="10" rx="2" fill="#e5f5ec" stroke="#27ae60" stroke-width="1.5"/>
+              <rect x="31" y="21" width="10" height="10" rx="2" fill="#fde8e8" stroke="#e74c3c" stroke-width="1.5"/>
+              <!-- Labels -->
+              <text x="10" y="15" font-family="sans-serif" font-size="9" fill="#1e8449" text-anchor="middle">V</text>
+              <text x="23" y="15" font-family="sans-serif" font-size="9" fill="#956a00" text-anchor="middle">O</text>
+              <text x="36" y="15" font-family="sans-serif" font-size="9" fill="#1e8449" text-anchor="middle">V</text>
+              <text x="10" y="28" font-family="sans-serif" font-size="9" fill="#8b1a1a" text-anchor="middle">S</text>
+              <text x="23" y="28" font-family="sans-serif" font-size="9" fill="#1e8449" text-anchor="middle">V</text>
+              <text x="36" y="28" font-family="sans-serif" font-size="9" fill="#8b1a1a" text-anchor="middle">S</text>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Näkee tilanteen heti</strong>
+            <span>Reaaliaikainen tilakartta — vapaat, varatut ja saapuneet paikat yhdellä silmäyksellä.</span>
+          </div>
+        </div>
+
+        <div class="sk3-conn" id="g2c">
+          <svg width="2" height="20" viewBox="0 0 2 20">
+            <path d="M1,0 L1,20" stroke="#27ae60" stroke-width="2" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+
+        <!-- Step 3: varaus -->
+        <div class="sk3-step" id="g3">
+          <div class="sk3-icon" id="g3i">
+            <svg viewBox="0 0 46 46" fill="none">
+              <!-- Checkmark in circle -->
+              <circle cx="23" cy="23" r="16" stroke="#27ae60" stroke-width="2"/>
+              <path d="M13,23 L20,30 L33,16" stroke="#1e8449" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="sk3-text">
+            <strong>Varaus tehty — kaikki näkevät</strong>
+            <span>Hautaustoimisto, seurakunta ja kaikki käyttäjät näkevät tilanteen samassa hetkessä.</span>
+          </div>
+        </div>
+
+        <div class="sk3-verdict good" id="gv1">
+          Alle 30 sekuntia. Tulos varma.
+          <span class="vd-sub">Ei puheluita, ei kävelyä, ei arvailu. Kaikki tietävät tilanteen reaaliajassa.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center">
+      <button class="sk3-restart" onclick="sk3Run()">Toista animaatio</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var LEFT  = ['s1','s1c','s2','s2c','s3','s3c','s4','sv1'];
+  var RIGHT = ['g1','g1c','g2','g2c','g3','gv1'];
+
+  function show(id, delay, iconAnim){
+    setTimeout(function(){
+      var el = document.getElementById(id);
+      if(!el) return;
+      el.classList.add('show');
+      if(iconAnim){
+        var ic = document.getElementById(id+'i');
+        if(ic){
+          setTimeout(function(){
+            ic.classList.add(iconAnim);
+            setTimeout(function(){ ic.classList.remove(iconAnim); }, 700);
+          }, 80);
+        }
+      }
+    }, delay);
+  }
+
+  function reset(){
+    LEFT.concat(RIGHT).forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.remove('show');
+    });
+    ['s1i','s2i','s3i','s4i','g1i','g2i','g3i'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.classList.remove('do-pop','do-shake');
+    });
+  }
+
+  window.sk3Run = function(){
+    reset();
+    setTimeout(function(){
+      // Left — slow, painful
+      show('s1',  100, 'do-shake');
+      show('s1c', 700);
+      show('s2',  1100, 'do-shake');
+      show('s2c', 1900);
+      show('s3',  2400);
+      show('s3c', 3300);
+      show('s4',  3800, 'do-shake');
+      show('sv1', 4700);
+
+      // Right — fast, clean
+      show('g1',  900, 'do-pop');
+      show('g1c', 1500);
+      show('g2',  1900, 'do-pop');
+      show('g2c', 2500);
+      show('g3',  2900, 'do-pop');
+      show('gv1', 3700);
+    }, 60);
+  };
+
+  sk3Run();
+})();
+</script>

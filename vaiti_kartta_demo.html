@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAITI – Kuntakarttademo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Outfit',sans-serif;
+  background:#f5f3ef;
+  color:#1c2128;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  padding:2rem;
+}
+
+.demo{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+  max-width:900px;
+  width:100%;
+}
+
+@media(max-width:640px){.demo{grid-template-columns:1fr}}
+
+.info h2{
+  font-size:1.6rem;
+  font-weight:700;
+  line-height:1.2;
+  margin-bottom:1rem;
+}
+
+.info p{
+  font-size:.95rem;
+  color:#3e4a55;
+  line-height:1.72;
+  margin-bottom:1.5rem;
+}
+
+.legend{display:flex;flex-direction:column;gap:.5rem}
+.leg-row{display:flex;align-items:center;gap:.65rem;font-size:.83rem;color:#3e4a55}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+.map-wrap{
+  background:#eceae5;
+  border:1px solid rgba(0,0,0,0.09);
+  border-radius:10px;
+  padding:2rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1rem;
+}
+
+#fi-map{width:100%;max-width:280px}
+
+.map-status{
+  font-size:.75rem;
+  color:#647280;
+  text-align:center;
+}
+
+.tooltip{
+  position:fixed;
+  background:#1c2128;
+  color:#f5f3ef;
+  padding:.4rem .8rem;
+  border-radius:5px;
+  font-size:.78rem;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .12s;
+  z-index:100;
+}
+</style>
+</head>
+<body>
+
+<div class="tooltip" id="tooltip"></div>
+
+<div class="demo">
+  <div class="info">
+    <h2>Kuntakarttademo — D3.js + geo.stat.fi</h2>
+    <p>
+      Tämä demo hakee oikeat kuntarajat suoraan <strong>Tilastokeskuksen WFS-rajapinnasta</strong>.
+      Data on Maanmittauslaitoksen avointa aineistoa (CC BY 4.0).
+    </p>
+    <p>
+      Kemi (<code>240</code>), Keminmaa (<code>241</code>) ja Sodankylä (<code>758</code>) on värjätty punaisella.
+      Vie hiiri kunnan päälle nähdäksesi nimen.
+    </p>
+    <div class="legend">
+      <div class="leg-row">
+        <div class="leg-dot" style="background:#b83040"></div>
+        Käytössä aktiivisesti
+      </div>
+      <div class="leg-row">
+        <div class="leg-dot" style="background:#b8722a"></div>
+        Käyttöönotto meneillään
+      </div>
+      <div class="leg-row">
+        <div class="leg-dot" style="background:#c8c4ba"></div>
+        Ei vielä mukana
+      </div>
+    </div>
+  </div>
+
+  <div class="map-wrap">
+    <svg id="fi-map" viewBox="0 0 400 600"></svg>
+    <span class="map-status" id="map-status">Ladataan kuntarajoja...</span>
+  </div>
+</div>
+
+<!-- D3 v7 from cdnjs (allowed CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+// Kuntakoodit jotka värjätään
+const ACTIVE   = new Set(['241']);        // Keminmaa – käytössä
+const PENDING  = new Set(['851']);        // Tornio – meneillään
+
+const svg    = d3.select('#fi-map');
+const width  = 400;
+const height = 600;
+const status = document.getElementById('map-status');
+const tip    = document.getElementById('tooltip');
+
+// Tilastokeskuksen WFS – kunta1000k = 1:1 000 000 mittakaava, kohtuullinen tiedostokoko
+const GEO_URL =
+  'https://geo.stat.fi/geoserver/wfs' +
+  '?service=WFS&version=2.0.0&request=GetFeature' +
+  '&typeName=kunta1000k_2024' +
+  '&outputFormat=application%2Fjson';
+
+d3.json(GEO_URL)
+  .then(data => {
+    status.textContent = data.features.length + ' kuntaa ladattu';
+
+    // Projektio – sovitetaan SVG-alueelle
+    const projection = d3.geoMercator().fitSize([width, height], data);
+    const pathGen    = d3.geoPath().projection(projection);
+
+    svg.selectAll('path')
+      .data(data.features)
+      .join('path')
+      .attr('d', pathGen)
+      .attr('fill', d => {
+        const k = d.properties.kunta;
+        if (ACTIVE.has(k))  return '#b83040';
+        if (PENDING.has(k)) return '#b8722a';
+        return '#c8c4ba';
+      })
+      .attr('stroke', '#f5f3ef')
+      .attr('stroke-width', '0.4')
+      .style('cursor', d => {
+        const k = d.properties.kunta;
+        return (ACTIVE.has(k) || PENDING.has(k)) ? 'pointer' : 'default';
+      })
+      .on('mousemove', (event, d) => {
+        const k    = d.properties.kunta;
+        const nimi = d.properties.nimi || d.properties.name || k;
+        let label  = nimi;
+        if (ACTIVE.has(k))  label += ' — Käytössä aktiivisesti';
+        if (PENDING.has(k)) label += ' — Käyttöönotto meneillään';
+        tip.textContent    = label;
+        tip.style.opacity  = '1';
+        tip.style.left     = (event.clientX + 12) + 'px';
+        tip.style.top      = (event.clientY - 8)  + 'px';
+      })
+      .on('mouseleave', () => { tip.style.opacity = '0'; });
+  })
+  .catch(err => {
+    status.textContent = 'Karttadatan lataus epäonnistui — tarkista verkkoyhteys';
+    console.error(err);
+  });
+</script>
+</body>
+</html>

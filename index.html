@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="VAITI — selainpohjainen hautaussäilytyspaikkojen hallintajärjestelmä seurakunnille. Reaaliaikainen tilannekuva, automaattinen laskutus, ei asennuksia.">
+<title>VAITI — Hautaussäilytyspaikkojen hallintajärjestelmä seurakunnille</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html,body{overflow-x:hidden;max-width:100%}
+
+:root{
+  --bg:       #f5f3ef;
+  --surface:  #eceae5;
+  --lift:     #e2e0db;
+  --text:     #1c2128;
+  --sub:      #3e4a55;
+  --faint:    #647280;
+  --rule:     rgba(0,0,0,0.09);
+  --accent:   #3d6e8c;
+  --accent-bg:#e8f0f5;
+  --red:      #b83040;
+  --orange:   #b8722a;
+  --gap:      clamp(4rem,8vw,6.5rem);
+}
+
+html{scroll-behavior:smooth;font-size:16px}
+
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+
+.container{
+  max-width:1500px;
+  margin:0 auto;
+  padding:0 clamp(1.25rem,4vw,2.5rem);
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem clamp(1.25rem,4vw,2.5rem);
+  background:rgba(245,243,239,0.94);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+
+.nav-right{display:flex;align-items:center;gap:2rem}
+
+.wordmark{
+  font-family:'Outfit',sans-serif;
+  font-size:1.25rem;
+  font-weight:700;
+  color:var(--text);
+  text-decoration:none;
+  letter-spacing:.08em;
+}
+
+.nav-cta{
+  font-size:.84rem;
+  font-weight:600;
+  color:#fff;
+  background:var(--accent);
+  padding:.5rem 1.2rem;
+  border-radius:6px;
+  text-decoration:none;
+  transition:opacity .2s;
+}
+.nav-cta:hover{opacity:.88}
+
+.nav-links{display:flex;gap:1.75rem;align-items:center}
+.nav-link-item{font-size:.84rem;color:var(--sub);text-decoration:none;transition:color .2s;font-weight:500}
+.nav-link-item:hover{color:var(--text)}
+
+.nav-hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--text);border-radius:2px;transition:all .25s ease}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-hamburger.open span:nth-child(2){opacity:0}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+.nav-mobiili{display:none;position:fixed;top:57px;left:0;right:0;background:rgba(245,243,239,0.98);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule);flex-direction:column;padding:1rem 1.5rem 1.5rem;gap:.25rem;z-index:99}
+.nav-mobiili.open{display:flex}
+.nav-mobiili-link{font-size:1rem;font-weight:500;color:var(--text);text-decoration:none;padding:.75rem 0;border-bottom:1px solid var(--rule);transition:color .2s}
+.nav-mobiili-link:last-of-type{border-bottom:none}
+.nav-mobiili-link:hover{color:var(--accent)}
+.nav-mobiili-cta{margin-top:.75rem;background:var(--accent);color:#fff;text-align:center;padding:.75rem;border-radius:7px;text-decoration:none;font-weight:600;font-size:.95rem}
+
+@media(max-width:680px){
+  .nav-hamburger{display:flex}
+  .nav-links{display:none}
+  .nav-cta{display:none}
+}
+
+/* ── HERO ── */
+.hero{
+  padding-top:5.5rem;
+  padding-bottom:0;
+  border-bottom:1px solid var(--rule);
+}
+
+.hero-top{
+  padding:clamp(3rem,6vw,5rem) 0 0;
+}
+
+.for-parishes{
+  display:inline-block;
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#2a5a75;
+  margin-bottom:1.5rem;
+}
+
+.hero h1{
+  font-size:clamp(3rem,7vw,6rem);
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:-.02em;
+  max-width:820px;
+  margin-bottom:1.5rem;
+  color:var(--text);
+}
+
+.hero-sub{
+  font-size:1.2rem;
+  color:var(--sub);
+  font-weight:400;
+  line-height:1.72;
+  max-width:520px;
+  margin-bottom:2.25rem;
+}
+
+.hero-actions{
+  display:flex;flex-direction:column;align-items:flex-start;gap:1.5rem;
+  flex-wrap:wrap;
+  padding-bottom:clamp(2.5rem,5vw,4rem);
+}
+
+.hero-promise {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  width: auto;
+}
+.hero-promise::before {
+  content: '✓';
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.btn-primary{
+  background:var(--accent);
+  color:#fff;
+  padding:.75rem 1.75rem;
+  border-radius:6px;
+  text-decoration:none;
+  font-weight:600;
+  font-size:.92rem;
+  transition:opacity .2s;
+}
+.btn-primary:hover{opacity:.88}
+
+.btn-link{
+  font-size:.88rem;
+  color:var(--sub);
+  text-decoration:none;
+  transition:color .2s;
+}
+.btn-link:hover{color:var(--text)}
+
+/* ── INTRO STRIP ── */
+.intro{
+  padding:var(--gap) 0;
+  border-bottom:1px solid var(--rule);
+}
+
+.intro-grid{
+  display:grid;
+  grid-template-columns:2fr 3fr;
+  gap:clamp(2rem,5vw,5rem);
+  align-items:start;
+}
+
+
+.intro-label{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-bottom:.75rem;
+  display:block;
+}
+
+.intro h2{
+  font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:700;
+  line-height:1.15;
+  color:var(--text);
+}
+
+.intro-body p{
+  font-size:1.02rem;
+  color:var(--sub);
+  line-height:1.78;
+  font-weight:400;
+  margin-bottom:1.2rem;
+}
+.intro-body p:last-child{margin-bottom:0}
+.intro-body strong{color:var(--accent);font-weight:600}
+
+/* ── FEATURES ── */
+.features{
+  padding:var(--gap) 0;
+  border-bottom:1px solid var(--rule);
+}
+
+.feat-intro{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+  margin-bottom:3rem;
+  align-items:end;
+}
+
+.feat-intro h2{
+  font-size:clamp(2rem,3.5vw,3rem);
+  font-weight:700;
+  line-height:1.15;
+}
+
+.feat-intro p{
+  font-size:.92rem;
+  color:var(--sub);
+  font-weight:300;
+  line-height:1.72;
+}
+
+.feat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  border:1px solid var(--rule);
+  border-radius:10px;
+  overflow:hidden;
+}
+
+
+.feat-cell{
+  padding:1.75rem 2rem;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  background:var(--bg);
+  transition:background .2s;
+}
+
+.feat-cell:hover{background:var(--surface)}
+.feat-cell:nth-child(even){border-right:none}
+.feat-cell:nth-last-child(-n+2){border-bottom:none}
+
+
+.feat-num{
+  font-size:.7rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  color:var(--accent);
+  margin-bottom:.6rem;
+  display:block;
+}
+
+.feat-cell h3{
+  font-size:1.05rem;
+  font-weight:600;
+  margin-bottom:.4rem;
+  color:var(--text);
+}
+
+.feat-cell p{
+  font-size:.9rem;
+  color:var(--sub);
+  line-height:1.62;
+  font-weight:400;
+}
+
+/* ── MAP ── */
+.map-section{
+  padding:var(--gap) 0;
+  border-bottom:1px solid var(--rule);
+}
+
+.map-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+}
+
+.map-label{
+  font-size:.72rem;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:.75rem;display:block;
+}
+
+.map-text h2{
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:700;line-height:1.15;
+  margin-bottom:1rem;
+}
+
+.map-text p{
+  font-size:.97rem;color:var(--sub);
+  line-height:1.72;font-weight:400;
+  margin-bottom:1.75rem;
+}
+
+.legend{display:flex;flex-direction:column;gap:.55rem;margin-bottom:2rem}
+.legend-row{display:flex;align-items:center;gap:.65rem;font-size:.85rem;color:var(--sub)}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.map-stats{
+  display:flex;gap:2.5rem;
+  padding-top:1.5rem;
+  border-top:1px solid var(--rule);
+}
+.m-num{
+  font-size:2.4rem;font-weight:700;
+  color:var(--accent);line-height:1;display:block;
+}
+.m-lbl{font-size:.72rem;color:var(--faint);margin-top:.25rem;display:block;
+  text-transform:uppercase;letter-spacing:.04em;}
+
+/* Finland map (D3) */
+.map-fig{
+  display:flex;justify-content:center;
+}
+
+.fi-svg{width:100%;height:auto;max-width:420px}
+
+.d3-tooltip{
+  position:fixed;
+  background:var(--text);color:var(--bg);
+  border-radius:5px;padding:.4rem .85rem;
+  font-size:.75rem;font-weight:400;
+  pointer-events:none;white-space:nowrap;
+  opacity:0;transition:opacity .12s;
+  z-index:200;
+}
+
+/* ── CONTACT ── */
+.contact{padding:var(--gap) 0}
+
+.contact-inner{max-width:640px;margin:0 auto;text-align:center}
+.contact-inner .intro-label{text-align:center}
+
+.contact-inner h2{
+  font-size:clamp(1.8rem,4vw,3.2rem);
+  font-weight:700;line-height:1.12;
+  margin-bottom:.75rem;
+}
+
+.contact-inner > p{
+  font-size:1.02rem;color:var(--sub);
+  font-weight:400;line-height:1.72;text-align:center;margin:0 auto;
+  margin-bottom:2rem;max-width:460px;
+}
+
+.contact-form{display:flex;flex-direction:column;gap:1rem;max-width:480px;margin:0 auto}
+.cf-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.cf-field{display:flex;flex-direction:column;gap:.35rem}
+.cf-label{font-size:.78rem;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em}
+.contact-form input,.contact-form textarea{
+  font-family:'Outfit',sans-serif;font-size:.95rem;
+  border:1px solid var(--rule);border-radius:6px;
+  padding:.65rem .9rem;background:#fff;color:var(--text);
+  transition:border-color .2s;outline:none;width:100%}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--accent)}
+.contact-form textarea{resize:vertical}
+.contact-alt {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+}
+
+.contact-alt-label {
+  font-size: .8rem;
+  color: var(--faint);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  font-weight: 600;
+}
+
+.contact-alt-links {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.contact-alt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .6rem 1.25rem;
+  border-radius: 7px;
+  border: 1.5px solid var(--rule);
+  background: #fff;
+  color: var(--text);
+  font-size: .88rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color .2s, background .2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+.contact-alt-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--surface);
+  border-top:1px solid var(--rule);
+  padding:1rem 4rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.76rem;color:var(--faint);
+}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.reveal.in{opacity:1;transform:none}
+
+.demo-section{
+  padding:var(--gap) 0;
+  border-bottom:1px solid var(--rule);
+}
+
+.demo-intro{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+  margin-bottom:2.5rem;
+  align-items:end;
+}
+
+.demo-intro h2{
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:700;line-height:1.15;
+}
+.demo-intro p{font-size:.95rem;color:var(--sub);font-weight:400;line-height:1.72;}
+
+/* Browser frame */
+.demo-frame{
+  border:1px solid var(--rule);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.06);
+  min-height:200px;
+}
+
+.demo-bar{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+  padding:.6rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+
+.demo-dots{display:flex;gap:.4rem}
+.demo-dots span{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--lift);display:block;
+}
+
+.demo-url-bar{
+  background:var(--lift);
+  border-radius:4px;
+  padding:.25rem .75rem;
+  font-size:.72rem;
+  color:var(--faint);
+  font-family:monospace;
+  flex:1;
+  max-width:360px;
+}
+
+.demo-body{
+  background:var(--bg);
+  padding:1.5rem;
+}
+
+.demo-location-title{
+  font-size:1.15rem;
+  font-weight:700;
+  color:#212529;
+  margin-bottom:1rem;
+  font-family:'Outfit',sans-serif;
+}
+
+/* Slot grid — matches paikat.html Bootstrap grid */
+.demo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,150px));
+  gap:.75rem;
+  justify-content:start;
+}
+
+/* Slot cards — exact copy of paikat.html .paikka-kortti */
+.pk{
+  cursor:pointer;
+  border-radius:.375rem;
+  border:1.5px solid rgba(0,0,0,.12);
+  padding:1.25rem .75rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  text-align:center;
+  min-height:140px;
+  transition:transform .2s,box-shadow .2s;
+  font-family:'Outfit',sans-serif;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.pk:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(0,0,0,.15)}
+.pk.vapaa{background:#d4edda}
+.pk.odottaa{background:#fff3cd}
+.pk.saapunut{background:#f8d7da}
+
+.pk-num{font-size:2.2rem;font-weight:700;color:#212529;line-height:1;margin-bottom:.2rem;min-height:3.5rem;display:flex;align-items:center;justify-content:center}
+.pk-type{font-size:.8rem;color:#6c757d;margin-bottom:.4rem;text-transform:capitalize}
+.pk-badge{
+  display:inline-block;
+  font-size:.72rem;font-weight:600;
+  padding:.2rem .5rem;border-radius:.25rem;
+  color:#fff;margin-bottom:.3rem;
+}
+.badge-success{background:#198754}
+.badge-warning{background:#ffc107;color:#212529}
+.badge-danger{background:#dc3545}
+.pk-name{font-size:.78rem;color:#212529;font-weight:600;line-height:1.3}
+.pk-sub{font-size:.7rem;color:#6c757d;line-height:1.3}
+
+/* Modal overlay */
+.demo-modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:1000;
+  align-items:center;justify-content:center;
+}
+.demo-modal-overlay.open{display:flex}
+
+.demo-modal{
+  background:#fff;
+  border-radius:8px;
+  padding:1.5rem;
+  width:90%;max-width:420px;
+  font-family:'Outfit',sans-serif;
+  position:relative;
+}
+
+.demo-modal h5{font-size:1rem;font-weight:700;margin-bottom:1rem;color:#212529}
+.demo-modal p{font-size:.88rem;color:#212529;margin-bottom:.4rem;line-height:1.5}
+.demo-modal p span{color:#6c757d}
+
+.demo-modal-footer{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:1.25rem;
+  padding-top:1rem;border-top:1px solid #dee2e6;
+  gap:.5rem;flex-wrap:wrap;
+}
+
+.dm-btn{
+  padding:.4rem .9rem;border-radius:.375rem;
+  font-size:.82rem;font-weight:600;
+  border:none;cursor:pointer;font-family:'Outfit',sans-serif;
+}
+.dm-close{background:#6c757d;color:#fff}
+.dm-saapunut{background:#198754;color:#fff}
+.dm-poista{background:#dc3545;color:#fff}
+.dm-lisaa{background:#0d6efd;color:#fff}
+.dm-close:hover{background:#5a6268}
+
+.demo-note{
+  margin-top:1rem;
+  text-align:center;
+  font-size:.75rem;
+  color:var(--faint);
+  font-style:italic;
+}
+
+/* Lokaatiokortit */
+.lok-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media(max-width:680px){.lok-grid{grid-template-columns:1fr}}
+.lok-nimi{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.demo-lok-card{background:var(--bg);border:1.5px solid var(--lift);border-radius:10px;padding:1.25rem;cursor:pointer;transition:border-color .2s,transform .15s,box-shadow .2s;position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.demo-lok-card:hover{border-color:var(--faint);transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.1)}
+.demo-lok-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--faint);border-radius:10px 10px 0 0}
+.demo-lok-rivi{display:flex;justify-content:space-between;align-items:center;padding:.45rem .7rem;border-radius:6px;margin-bottom:.4rem;font-size:.82rem;font-weight:500}
+.demo-lok-rivi.vapaa{background:#d4edda;color:#1a5c2a}
+.demo-lok-rivi.odottaa{background:#fff3cd;color:#7a4f00}
+.demo-lok-rivi.saapunut{background:#f8d7da;color:#5c1a1a}
+.demo-lok-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:.4rem;flex-shrink:0}
+.demo-lok-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.75rem;margin-top:.75rem;border-top:1px solid var(--rule);font-size:.78rem;color:var(--faint)}
+.demo-lok-avaa{color:var(--accent);font-weight:700;font-size:.85rem;display:inline-flex;align-items:center;gap:.3rem;background:var(--accent-bg);padding:.3rem .7rem;border-radius:4px}
+
+/* Paikkanäkymä yläpalkki */
+.demo-back-bar{margin:-1.5rem -1.5rem 1rem;padding:.6rem 1rem;border-bottom:1px solid var(--rule);background:var(--surface);display:flex;align-items:center;justify-content:space-between}
+.demo-back-btn{background:none;border:none;font-family:'Outfit',sans-serif;font-size:.82rem;color:var(--accent);cursor:pointer;font-weight:500;padding:0}
+.demo-back-btn:hover{text-decoration:underline}
+.demo-back-lok-nimi{font-size:.82rem;font-weight:600;color:var(--sub)}
+.demo-view{transition:opacity .25s ease}
+.demo-paikka-otsikko{padding:.75rem 1.25rem;font-size:.95rem;font-weight:700;color:var(--text);border-bottom:1px solid var(--rule);background:var(--surface);display:none}
+
+/* ── VERTAILU ── */
+.vertailu-section {
+  margin-top: 2.5rem;
+}
+
+.vertailu-label {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: .75rem;
+  display: block;
+}
+
+.vertailu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+}
+
+.vertailu-puoli {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.vertailu-puoli:first-child {
+  border-right: 1px solid var(--rule);
+}
+
+.vertailu-mobiili {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+}
+
+@media (max-width: 768px) {
+  .vertailu-grid { display: none; }
+  .vertailu-mobiili { display: block; }
+}
+
+/* ── RÄÄTÄLÖINTI ── */
+.raatalointi-section {
+  padding: var(--gap) 0;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg);
+}
+.raatalointi-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+@media(max-width:680px){ .raatalointi-inner { grid-template-columns: 1fr; gap: 1.5rem; } }
+.raatalointi-inner h2 {
+  font-size: clamp(1.5rem,3vw,2.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: .75rem;
+  color: var(--text);
+}
+.raatalointi-inner p {
+  font-size: .95rem;
+  color: var(--sub);
+  line-height: 1.72;
+}
+.raatalointi-lista {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.r-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--text);
+  padding: .5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.r-item:last-child { border-bottom: none; }
+.r-check {
+  color: var(--accent);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav { padding: .75rem 1rem; }
+  .wordmark { font-size: .85rem; letter-spacing: .03em; }
+  .nav-cta { padding: .45rem .85rem; font-size: .78rem; white-space: nowrap; }
+
+  .container { padding: 0 1rem; }
+
+  .hero { padding-top: 5rem; }
+  .hero h1 { font-size: clamp(1.9rem, 7vw, 3rem); word-break: break-word; hyphens: auto; }
+  .hero-sub { font-size: .95rem; }
+  .hero-promise { font-size: .9rem; }
+  .hero-actions { flex-direction: column; align-items: flex-start; gap: .75rem; }
+  .btn-primary { width: 100%; text-align: center; justify-content: center; }
+
+  .trust-bar { font-size: .75rem; gap: .75rem; padding: .6rem 1rem; }
+
+  .intro-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+
+  .feat-intro { grid-template-columns: 1fr; gap: .75rem; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .feat-cell { border-right: none !important; }
+  .feat-cell:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule) !important; }
+  .feat-cell:last-child { border-bottom: none !important; }
+
+  .demo-grid { grid-template-columns: repeat(4, 1fr) !important; }
+  .demo-intro { grid-template-columns: 1fr; gap: .75rem; }
+
+  .map-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .map-fig { padding: 1.5rem; }
+
+  .contact-inner { text-align: left; }
+  .cf-row { grid-template-columns: 1fr; }
+
+  .sketch-cols { grid-template-columns: 1fr; }
+  .sk-divider { display: none; }
+
+  footer { flex-direction: column; gap: .4rem; text-align: center; padding: 1.25rem; }
+
+  .map-stats { gap: 1.25rem; }
+  .m-num { font-size: 2rem; }
+}
+
+@media(max-width:640px){
+  .demo-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .pk { min-height: 110px; }
+  .pk-num { font-size: 1.6rem; }
+  .lok-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="d3-tooltip" id="d3-tooltip"></div>
+
+<nav>
+  <a href="#" class="wordmark">VAITI — Vainajatietojärjestelmä</a>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#ominaisuudet" class="nav-link-item">Ominaisuudet</a>
+      <a href="#demo" class="nav-link-item">Demo</a>
+      <a href="#yhteystiedot" class="nav-link-item">Yhteystiedot</a>
+    </div>
+    <a href="#yhteystiedot" class="nav-cta">Pyydä esittely</a>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMobiiliNav()" aria-label="Valikko">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="nav-mobiili" id="navMobiili">
+  <a href="#ominaisuudet" class="nav-mobiili-link" onclick="toggleMobiiliNav()">Ominaisuudet</a>
+  <a href="#demo" class="nav-mobiili-link" onclick="toggleMobiiliNav()">Demo</a>
+  <a href="#yhteystiedot" class="nav-mobiili-link" onclick="toggleMobiiliNav()">Yhteystiedot</a>
+  <a href="#yhteystiedot" class="nav-mobiili-cta" onclick="toggleMobiiliNav()">Pyydä esittely</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-top">
+      <span class="for-parishes">Seurakunnille</span>
+      <h1>Hautaussäilytyspaikkojen hallinta selaimessa.</h1>
+      <p class="hero-sub">Korvaa WhatsApp-viestit ja Excel-taulukot reaaliaikaisella järjestelmällä. Ei asennuksia. Toimii kaikilla laitteilla.</p>
+      <p style="font-size:.78rem;color:var(--faint);letter-spacing:.04em;margin-bottom:2.25rem">Kemissä kehitetty · Käytössä Meri-Lapin alueella · Selainpohjainen · Toimii puhelimella</p>
+      <div class="hero-actions">
+        <a href="#yhteystiedot" class="btn-primary">Pyydä maksuton esittely</a>
+        <a href="#ominaisuudet" class="btn-link">Mitä järjestelmä tekee →</a>
+        <p class="hero-promise">Kuukauden ilmainen kokeilu — jos VAITI ei ratkaise ongelmaanne, lähdette ilman kuluja.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- INTRO -->
+<div class="intro reveal">
+  <div class="container">
+    <div class="intro-grid">
+      <div>
+        <span class="intro-label">Miksi VAITI</span>
+        <h2>Hajanainen tieto aiheuttaa virheitä.</h2>
+      </div>
+      <div class="intro-body">
+        <p>Hautaustoimisto soittaa — suntio etsii paperilistan. Varaus kirjataan Exceliin tai WhatsApp-ryhmään, tieto ei välity kaikille, ja <strong>tuplavauksen riski on todellinen</strong>.</p>
+        <p>Kuun lopussa laskutus lasketaan käsin. Kuka tuli, milloin, kuinka kauan oli paikalla. Tähän menee tunteja — tietoja jotka järjestelmä laskee automaattisesti.</p>
+        <p>VAITI tarjoaa reaaliaikaisen tilannekuvan kaikille osapuolille. Varaukset, saapumiset ja laskutusraportit yhdessä paikassa.</p>
+      </div>
+    </div>
+    <div class="vertailu-section">
+      <span class="vertailu-label">Näin se eroaa nykykäytännöstä</span>
+      <div class="vertailu-grid">
+        <img src="vertailu_vasen.png" alt="Ilman VAITIa" class="vertailu-puoli">
+        <img src="vertailu_oikea.png" alt="VAITIn kanssa" class="vertailu-puoli">
+      </div>
+      <img src="vertailu_mobiili.png" alt="Nykytilanne vs VAITI" class="vertailu-mobiili">
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features reveal" id="ominaisuudet">
+  <div class="container">
+    <div class="feat-intro">
+      <h2>Mitä järjestelmä tekee</h2>
+      <p>Selkeä, nopea, helppokäyttöinen. Toimii tietokoneella, tabletilla ja puhelimella — ilman IT-tukea.</p>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat-cell">
+        <span class="feat-num">01</span>
+        <h3>Visuaalinen paikkanäkymä</h3>
+        <p>Reaaliaikainen tilakartta — vapaat, varatut ja odottavat paikat yhdellä silmäyksellä.</p>
+      </div>
+      <div class="feat-cell">
+        <span class="feat-num">02</span>
+        <h3>Tuplavaraus on estetty</h3>
+        <p>Järjestelmä ei salli kahta varausta samalle paikalle. Inhimillinen virhe on teknisesti mahdoton.</p>
+      </div>
+      <div class="feat-cell">
+        <span class="feat-num">03</span>
+        <h3>Automaattinen tapahtumaloki</h3>
+        <p>Kaikki tapahtumat kirjautuvat aikaleimalla. Täydellinen jäljitettävyys ilman käsityötä.</p>
+      </div>
+      <div class="feat-cell">
+        <span class="feat-num">04</span>
+        <h3>PDF-laskutusraportti</h3>
+        <p>Valitse tapahtumat, paina nappia — laskutusliite on valmis. Säilytysajat lasketaan automaattisesti.</p>
+      </div>
+      <div class="feat-cell">
+        <span class="feat-num">05</span>
+        <h3>Toimii kaikilla laitteilla</h3>
+        <p>Selainkäyttöinen. Tietokone, tabletti, puhelin — ei asennuksia, ei päivityksiä.</p>
+      </div>
+      <div class="feat-cell">
+        <span class="feat-num">06</span>
+        <h3>Käyttöoikeushallinta</h3>
+        <p>Admin- ja peruskäyttäjäroolit. Jokaisella seurakunnalla oma erillinen tietokanta.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RÄÄTÄLÖINTI -->
+<div class="raatalointi-section reveal">
+  <div class="container">
+    <div class="raatalointi-inner">
+      <div>
+        <span class="intro-label">Räätälöity teille</span>
+        <h2>Järjestelmä rakennetaan teidän tilojenne mukaan</h2>
+        <p>Ennen käyttöönottoa kartoitamme yhdessä teidän säilytystilanne — lokaatiot, paikkojen määrä, tyypit (kylmiö, pakastin, uurnahylly). VAITI näyttää täsmälleen teidän tilanne, ei geneeristä mallipohjaa. Käyttöönotto kestää tyypillisesti 1–2 viikkoa.</p>
+      </div>
+      <div class="raatalointi-lista">
+        <div class="r-item"><span class="r-check">✓</span> Oikeat paikkojen nimet</div>
+        <div class="r-item"><span class="r-check">✓</span> Oikea paikkojen määrä ja numerointi</div>
+        <div class="r-item"><span class="r-check">✓</span> Oikeat tyypit — kylmiö, pakastin, uurnahylly</div>
+        <div class="r-item"><span class="r-check">✓</span> Käyttöönotto yhdessä — ei yksin</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO -->
+<div class="demo-section reveal" id="demo">
+  <div class="container">
+    <div class="demo-intro">
+      <div>
+        <span class="intro-label">Interaktiivinen demo</span>
+        <h2>Näin se toimii käytännössä — kokeile</h2>
+      </div>
+      <p>Alla on esimerkkinäkymä säilytyspaikoista. Klikkaa mitä tahansa paikkaa — näet saman toiminnon kuin oikeassa järjestelmässä.</p>
+    </div>
+
+    <div class="demo-frame">
+      <div class="demo-bar">
+        <div class="demo-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="demo-url-bar"></div>
+      </div>
+      <div class="demo-paikka-otsikko" id="demoPaikkaOtsikko"></div>
+      <div class="demo-body">
+        <div id="demoLokaatiot" class="demo-view">
+          <div class="lok-grid" id="lokGrid"></div>
+        </div>
+        <div id="demoPaikat" class="demo-view" style="display:none;opacity:0">
+          <span id="demoPaikkaNimi" style="display:none"></span>
+          <div class="demo-grid" id="demoGrid"></div>
+          <div style="padding:1rem 0;border-top:1px solid var(--rule);text-align:left;">
+            <button onclick="naytaLokaatiot()"
+              style="background:var(--surface);border:1px solid var(--rule);cursor:pointer;
+              font-family:'Outfit',sans-serif;font-size:.84rem;color:var(--sub);
+              display:inline-flex;align-items:center;gap:.5rem;
+              padding:.55rem 1rem;border-radius:6px;
+              transition:background .2s,border-color .2s,color .2s"
+              onmouseover="this.style.background='var(--lift)';this.style.borderColor='var(--faint)';this.style.color='var(--text)'"
+              onmouseout="this.style.background='var(--surface)';this.style.borderColor='var(--rule)';this.style.color='var(--sub)'">
+              ← Takaisin lokaatioihin
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="demo-note">Demo-näkymä — kaikki nimet ja tiedot ovat kuvitteellisia.</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="demo-modal-overlay" id="demoOverlay">
+  <div class="demo-modal">
+    <h5 id="dmTitle">Paikan tiedot</h5>
+    <div id="dmBody"></div>
+    <div class="demo-modal-footer" id="dmFooter"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const LOKAATIOT = [
+    { nimi: 'Säilytystila A', slug: 'a', vapaa: 4, odottaa: 2, saapunut: 2, yhteensa: 8 },
+    { nimi: 'Säilytystila B', slug: 'b', vapaa: 3, odottaa: 1, saapunut: 2, yhteensa: 6 },
+    { nimi: 'Lisätila',       slug: 'c', vapaa: 3, odottaa: 0, saapunut: 1, yhteensa: 4 }
+  ];
+
+  const PAIKAT_DATA = {
+    'a': [
+      {n:1,tyyppi:'kylmiö',tila:'saapunut',nimi:'Vainaja 1',ht:'Hautauspalvelu Oy',pvm:'08.04.2025'},
+      {n:2,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:3,tyyppi:'kylmiö',tila:'odottaa',nimi:'Vainaja 2',ht:'Pohjolan Hautauspalvelu',pvm:'13.04.2025'},
+      {n:4,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:5,tyyppi:'kylmiö',tila:'saapunut',nimi:'Vainaja 3',ht:'Lapin Hautaustoimisto',pvm:'05.04.2025'},
+      {n:6,tyyppi:'kylmiö',tila:'odottaa',nimi:'Vainaja 4',ht:'Hautauspalvelu Oy',pvm:'14.04.2025'},
+      {n:7,tyyppi:'pakastin',tila:'vapaa'},
+      {n:8,tyyppi:'pakastin',tila:'vapaa'}
+    ],
+    'b': [
+      {n:1,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:2,tyyppi:'kylmiö',tila:'saapunut',nimi:'Vainaja 5',ht:'Hautauspalvelu Oy',pvm:'01.04.2025'},
+      {n:3,tyyppi:'kylmiö',tila:'odottaa',nimi:'Vainaja 6',ht:'Pohjolan Hautauspalvelu',pvm:'15.04.2025'},
+      {n:4,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:5,tyyppi:'kylmiö',tila:'saapunut',nimi:'Vainaja 7',ht:'Lapin Hautaustoimisto',pvm:'02.04.2025'},
+      {n:6,tyyppi:'pakastin',tila:'vapaa'}
+    ],
+    'c': [
+      {n:1,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:2,tyyppi:'kylmiö',tila:'saapunut',nimi:'Vainaja 8',ht:'Hautauspalvelu Oy',pvm:'10.04.2025'},
+      {n:3,tyyppi:'kylmiö',tila:'vapaa'},
+      {n:4,tyyppi:'kylmiö',tila:'vapaa'}
+    ]
+  };
+
+  const lokGrid    = document.getElementById('lokGrid');
+  const demoLok    = document.getElementById('demoLokaatiot');
+  const demoPaikat = document.getElementById('demoPaikat');
+  const demoGrid   = document.getElementById('demoGrid');
+  const paikkaNimi = document.getElementById('demoPaikkaNimi');
+
+  // Rakennetaan lokaatiokortit
+  LOKAATIOT.forEach(lok => {
+    const kaytossa = lok.odottaa + lok.saapunut;
+    const card = document.createElement('div');
+    card.className = 'demo-lok-card';
+    card.innerHTML = `
+      <div class="lok-nimi">${lok.nimi}</div>
+      <div class="demo-lok-rivi vapaa">
+        <span><span class="demo-lok-dot" style="background:#27ae60"></span>Vapaa</span>
+        <strong>${lok.vapaa}</strong>
+      </div>
+      <div class="demo-lok-rivi odottaa">
+        <span><span class="demo-lok-dot" style="background:#f39c12"></span>Odottaa saapumista</span>
+        <strong>${lok.odottaa}</strong>
+      </div>
+      <div class="demo-lok-rivi saapunut">
+        <span><span class="demo-lok-dot" style="background:#e74c3c"></span>Saapunut</span>
+        <strong>${lok.saapunut}</strong>
+      </div>
+      <div class="demo-lok-footer">
+        <span>${kaytossa} / ${lok.yhteensa} käytössä</span>
+        <span class="demo-lok-avaa">Avaa →</span>
+      </div>`;
+    card.addEventListener('click', () => avaaLok(lok));
+    lokGrid.appendChild(card);
+  });
+
+  function renderPaikat(slug) {
+    demoGrid.innerHTML = '';
+    const paikat = PAIKAT_DATA[slug];
+    paikat.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'pk ' + (p.tila === 'vapaa' ? 'vapaa' : p.tila === 'odottaa' ? 'odottaa' : 'saapunut');
+      card.innerHTML = `
+        <div class="pk-num">${p.n}</div>
+        <div class="pk-type">${p.tyyppi}</div>
+        ${p.tila === 'vapaa'
+          ? `<span class="pk-badge badge-success">Vapaa</span>`
+          : `<span class="pk-badge ${p.tila === 'odottaa' ? 'badge-warning' : 'badge-danger'}">
+               ${p.tila === 'odottaa' ? 'Varattu (odottaa)' : 'Varattu (saapunut)'}
+             </span>
+             <div class="pk-name">${p.nimi}</div>
+             <div class="pk-sub">${p.ht}</div>
+             <div class="pk-sub">${p.pvm}</div>`
+        }`;
+      card.addEventListener('click', () => openModal(p));
+      demoGrid.appendChild(card);
+    });
+  }
+
+  function naytaPaikat(slug) {
+    const lok = document.getElementById('demoLokaatiot');
+    const pk  = document.getElementById('demoPaikat');
+    lok.style.display = 'none';
+    renderPaikat(slug);
+    pk.style.display  = 'block';
+    pk.style.opacity  = '0';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        pk.style.transition = 'opacity .25s ease';
+        pk.style.opacity = '1';
+      });
+    });
+    setTimeout(function(){
+      const frame = document.getElementById('demoFrame') || document.querySelector('.demo-frame');
+      if(frame){
+        frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 50);
+  }
+
+  function avaaLok(lok) {
+    paikkaNimi.textContent = lok.nimi;
+    const otsikko = document.getElementById('demoPaikkaOtsikko');
+    otsikko.textContent = lok.nimi;
+    otsikko.style.display = 'block';
+    naytaPaikat(lok.slug);
+  }
+
+  window.naytaLokaatiot = function() {
+    const lok = document.getElementById('demoLokaatiot');
+    const pk  = document.getElementById('demoPaikat');
+    document.getElementById('demoPaikkaOtsikko').style.display = 'none';
+    pk.style.display  = 'none';
+    pk.style.opacity  = '0';
+    lok.style.display = 'grid';
+    lok.style.opacity = '0';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        lok.style.transition = 'opacity .25s ease';
+        lok.style.opacity = '1';
+      });
+    });
+    setTimeout(function(){
+      const frame = document.getElementById('demoFrame') || document.querySelector('.demo-frame');
+      if(frame){
+        frame.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }, 50);
+  };
+
+  // Modaali
+  const overlay = document.getElementById('demoOverlay');
+  const dmTitle = document.getElementById('dmTitle');
+  const dmBody  = document.getElementById('dmBody');
+  const dmFoot  = document.getElementById('dmFooter');
+
+  function openModal(p){
+    dmTitle.textContent = `Paikka ${p.n} — ${paikkaNimi.textContent}`;
+    if(p.tila === 'vapaa'){
+      dmBody.innerHTML = `<p>Tila: <strong>Vapaa</strong></p>`;
+      dmFoot.innerHTML = `
+        <button class="dm-btn dm-close" onclick="closeDemoModal()">Sulje</button>
+        <button class="dm-btn dm-lisaa" onclick="closeDemoModal()">Lisää vainaja</button>`;
+    } else {
+      dmBody.innerHTML = `
+        <p>Tila: <strong>${p.tila === 'odottaa' ? 'Varattu — odottaa saapumista' : 'Varattu — saapunut'}</strong></p>
+        <p>Nimi: <strong>${p.nimi}</strong></p>
+        <p>Hautaustoimisto: <strong>${p.ht}</strong></p>
+        <p>Tuontipäivä: <strong>${p.pvm}</strong></p>
+        <p>Saapunut: <strong>${p.tila === 'saapunut' ? 'Kyllä' : 'Ei'}</strong></p>`;
+      dmFoot.innerHTML = `
+        <button class="dm-btn dm-close" onclick="closeDemoModal()">Sulje</button>
+        ${p.tila === 'odottaa' ? `<button class="dm-btn dm-saapunut" onclick="closeDemoModal()">Merkitse saapuneeksi</button>` : ''}
+        <button class="dm-btn dm-poista" onclick="closeDemoModal()">Poista vainaja</button>`;
+    }
+    overlay.classList.add('open');
+  }
+
+  window.closeDemoModal = () => overlay.classList.remove('open');
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeDemoModal(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeDemoModal();
+  });
+})();
+
+function toggleMobiiliNav(){
+  const btn = document.getElementById('navHamburger');
+  const menu = document.getElementById('navMobiili');
+  btn.classList.toggle('open');
+  menu.classList.toggle('open');
+}
+document.addEventListener('click', function(e){
+  const btn = document.getElementById('navHamburger');
+  const menu = document.getElementById('navMobiili');
+  if(!btn.contains(e.target) && !menu.contains(e.target)){
+    btn.classList.remove('open');
+    menu.classList.remove('open');
+  }
+});
+
+</script>
+
+<!-- MAP -->
+<div class="map-section reveal">
+  <div class="container">
+    <div class="map-grid">
+      <div class="map-text">
+        <span class="map-label">Levinneisyys</span>
+        <h2>Ketkä Suomessa ovat jo mukana?</h2>
+        <p>VAITI on käytössä Meri-Lapin alueella. Uusia seurakuntia tulee mukaan — ole ajoissa liikkeellä.</p>
+
+        <div class="legend">
+          <div class="legend-row">
+            <div class="ldot" style="background:var(--red)"></div>Käytössä
+          </div>
+          <div class="legend-row">
+            <div class="ldot" style="background:var(--lift)"></div>Ei vielä mukana
+          </div>
+        </div>
+
+        <div class="map-stats">
+          <div><span class="m-num">2</span><span class="m-lbl">Tuotannossa</span></div>
+          <div><span class="m-num">343</span><span class="m-lbl">Seurakuntaa Suomessa</span></div>
+        </div>
+      </div>
+
+      <div class="map-fig">
+        <svg id="fi-map" class="fi-svg"></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact reveal" id="yhteystiedot">
+  <div class="container">
+    <div class="contact-inner">
+      <span class="intro-label">Ota yhteyttä</span>
+      <h2>Haluatko nähdä VAITIn käytännössä?</h2>
+      <p>Tarjoan maksuttoman, sitoumuksettoman esittelyn — käydään läpi järjestelmä ja katsotaan sopiiko se teidän tarpeisiinne.</p>
+      <div id="contactWrap">
+        <form class="contact-form" id="contactForm">
+          <input type="hidden" name="_subject" value="Uusi yhteydenotto — VAITI">
+          <div class="cf-row">
+            <div class="cf-field">
+              <label class="cf-label">Nimi</label>
+              <input type="text" name="nimi" required>
+            </div>
+            <div class="cf-field">
+              <label class="cf-label">Seurakunta</label>
+              <input type="text" name="seurakunta" required>
+            </div>
+          </div>
+          <div class="cf-field">
+            <label class="cf-label">Sähköposti</label>
+            <input type="email" name="email" required>
+          </div>
+          <div class="cf-field">
+            <label class="cf-label">Viesti (valinnainen)</label>
+            <textarea name="viesti" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn-primary" id="cfBtn" style="width:100%;justify-content:center">Pyydä maksuton esittely</button>
+        </form>
+        <div id="cfThanks" style="display:none;text-align:center;padding:2.5rem 2rem;background:#fff;border:1px solid var(--rule);border-radius:10px;max-width:480px;margin:0 auto">
+          <p style="font-size:2rem">✓</p>
+          <p style="font-size:1.3rem;font-weight:700;color:var(--text);margin:.5rem 0">Kiitos yhteydenotosta!</p>
+          <p style="color:var(--sub);font-size:.9rem">Lomake lähetetty onnistuneesti.</p>
+        </div>
+        <div class="contact-alt">
+          <span class="contact-alt-label">Tai ota suoraan yhteyttä</span>
+          <div class="contact-alt-links">
+            <a href="mailto:elias.martikainen@eldarisoft.fi" class="contact-alt-btn">
+              ✉ elias.martikainen@eldarisoft.fi
+            </a>
+            <a href="https://eldarisoft.fi" target="_blank" class="contact-alt-btn">
+              <span style="font-family:'Outfit',sans-serif; font-weight:700; color:#1a6fd4; letter-spacing:-.02em; font-size:.95rem;">E:\</span>
+              eldarisoft.fi
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+    <span style="font-weight:600;color:var(--text)">VAITI</span>
+    <span style="color:var(--faint)">·</span>
+    <a href="https://eldarisoft.fi" target="_blank" style="color:var(--faint);text-decoration:none;border-bottom:1px solid var(--rule);padding-bottom:1px;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--faint)';this.style.borderColor='var(--rule)'">Eldarisoft.fi</a>
+    <span style="color:var(--faint)">·</span>
+    <span>Kemi</span>
+  </div>
+  <span>© 2026 Elias Martikainen</span>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+/* ── Scroll reveal ── */
+const obs = new IntersectionObserver(els=>{
+  els.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── D3 kuntakartta ── */
+const ACTIVE = new Set(['240', '241']);  // Kemi + Keminmaa
+
+const tip = document.getElementById('d3-tooltip');
+
+const GEO_URL =
+  'https://geo.stat.fi/geoserver/wfs' +
+  '?service=WFS&version=2.0.0&request=GetFeature' +
+  '&typeName=kunta1000k_2024' +
+  '&outputFormat=application%2Fjson&srsName=EPSG:4326';
+
+d3.json(GEO_URL)
+  .then(data => {
+    const W = 420, H = 650;
+    const svg = d3.select('#fi-map')
+      .attr('viewBox', `0 0 ${W} ${H}`)
+      .attr('width', '100%');
+
+    const projection = d3.geoMercator().fitSize([W, H], data);
+    const pathGen    = d3.geoPath().projection(projection);
+
+    svg.selectAll('path')
+      .data(data.features)
+      .join('path')
+      .attr('d', pathGen)
+      .attr('fill', d => {
+        const k = d.properties.kunta;
+        if (ACTIVE.has(k)) return '#b83040';
+        return '#d4d0c8';
+      })
+      .attr('stroke', '#f5f3ef')
+      .attr('stroke-width', '0.5')
+      .style('cursor', d => {
+        const k = d.properties.kunta;
+        return ACTIVE.has(k) ? 'pointer' : 'default';
+      })
+      .on('mousemove', (event, d) => {
+        const k    = d.properties.kunta;
+        const nimi = d.properties.nimi || d.properties.name || k;
+        let label  = nimi;
+        if (ACTIVE.has(k)) label += ' — Käytössä';
+        tip.textContent   = label;
+        tip.style.opacity = '1';
+        tip.style.left    = (event.clientX + 12) + 'px';
+        tip.style.top     = (event.clientY - 8)  + 'px';
+      })
+      .on('mouseleave', () => { tip.style.opacity = '0'; });
+  })
+  .catch(err => {
+    console.error('Karttadatan lataus epäonnistui');
+    console.error(err);
+  });
+
+/* ── Contact form ── */
+document.getElementById('contactForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const btn = document.getElementById('cfBtn');
+  btn.textContent = 'Lähetetään...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://formspree.io/f/xbdqddjw', {
+      method: 'POST',
+      body: new FormData(this),
+      headers: { 'Accept': 'application/json' }
+    });
+    if(res.ok){
+      document.getElementById('contactForm').style.display = 'none';
+      document.getElementById('cfThanks').style.display = 'block';
+    } else {
+      btn.textContent = 'Pyydä maksuton esittely';
+      btn.disabled = false;
+      alert('Lähetys epäonnistui. Kokeile uudelleen.');
+    }
+  } catch(err){
+    btn.textContent = 'Pyydä maksuton esittely';
+    btn.disabled = false;
+    alert('Verkkovirhe. Kokeile uudelleen.');
+  }
+});
+</script>
+</body>
+</html>

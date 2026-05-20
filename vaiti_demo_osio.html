@@ -1,0 +1,278 @@
+<!--
+  VAITI DEMO-OSIO
+  Lisää tämä vaiti_myyntisivu_v5.html:ään features-osion JÄLKEEN, map-osion ENNEN.
+  Kopioi myös <style>-blokki sivun olemassa olevaan <style>-tagiin,
+  tai lisää se erilliseksi <style>-tagiksi <head>-osioon.
+-->
+
+<!-- ═══════════════ CSS ═══════════════ -->
+<style>
+.demo-section{
+  padding:var(--gap) 0;
+  border-bottom:1px solid var(--rule);
+}
+
+.demo-intro{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+  margin-bottom:2.5rem;
+  align-items:end;
+}
+@media(max-width:680px){.demo-intro{grid-template-columns:1fr;gap:1rem}}
+
+.demo-intro h2{
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:700;line-height:1.15;
+}
+.demo-intro p{font-size:.95rem;color:var(--sub);font-weight:400;line-height:1.72;}
+
+/* Browser frame */
+.demo-frame{
+  border:1px solid var(--rule);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,0.06);
+}
+
+.demo-bar{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+  padding:.6rem 1rem;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+
+.demo-dots{display:flex;gap:.4rem}
+.demo-dots span{
+  width:10px;height:10px;border-radius:50%;
+  background:var(--lift);display:block;
+}
+
+.demo-url-bar{
+  background:var(--lift);
+  border-radius:4px;
+  padding:.25rem .75rem;
+  font-size:.72rem;
+  color:var(--faint);
+  font-family:monospace;
+  flex:1;
+  max-width:360px;
+}
+
+.demo-body{
+  background:#fff;
+  padding:1.5rem;
+}
+
+.demo-location-title{
+  font-size:1.15rem;
+  font-weight:700;
+  color:#212529;
+  margin-bottom:1rem;
+  font-family:'Outfit',sans-serif;
+}
+
+/* Slot grid — matches paikat.html Bootstrap grid */
+.demo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:.75rem;
+}
+
+/* Slot cards — exact copy of paikat.html .paikka-kortti */
+.pk{
+  cursor:pointer;
+  border-radius:.375rem;
+  border:1px solid rgba(0,0,0,.125);
+  padding:1rem .75rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  min-height:140px;
+  transition:transform .2s,box-shadow .2s;
+  font-family:'Outfit',sans-serif;
+}
+.pk:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(0,0,0,.15)}
+.pk.vapaa{background:#d4edda}
+.pk.odottaa{background:#fff3cd}
+.pk.saapunut{background:#f8d7da}
+
+.pk-num{font-size:2.2rem;font-weight:700;color:#212529;line-height:1;margin-bottom:.2rem}
+.pk-type{font-size:.8rem;color:#6c757d;margin-bottom:.4rem;text-transform:capitalize}
+.pk-badge{
+  display:inline-block;
+  font-size:.72rem;font-weight:600;
+  padding:.2rem .5rem;border-radius:.25rem;
+  color:#fff;margin-bottom:.3rem;
+}
+.badge-success{background:#198754}
+.badge-warning{background:#ffc107;color:#212529}
+.badge-danger{background:#dc3545}
+.pk-name{font-size:.78rem;color:#212529;font-weight:600;line-height:1.3}
+.pk-sub{font-size:.7rem;color:#6c757d;line-height:1.3}
+
+/* Modal overlay */
+.demo-modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.45);
+  z-index:1000;
+  align-items:center;justify-content:center;
+}
+.demo-modal-overlay.open{display:flex}
+
+.demo-modal{
+  background:#fff;
+  border-radius:8px;
+  padding:1.5rem;
+  width:90%;max-width:420px;
+  font-family:'Outfit',sans-serif;
+  position:relative;
+}
+
+.demo-modal h5{font-size:1rem;font-weight:700;margin-bottom:1rem;color:#212529}
+.demo-modal p{font-size:.88rem;color:#212529;margin-bottom:.4rem;line-height:1.5}
+.demo-modal p span{color:#6c757d}
+
+.demo-modal-footer{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:1.25rem;
+  padding-top:1rem;border-top:1px solid #dee2e6;
+  gap:.5rem;flex-wrap:wrap;
+}
+
+.dm-btn{
+  padding:.4rem .9rem;border-radius:.375rem;
+  font-size:.82rem;font-weight:600;
+  border:none;cursor:pointer;font-family:'Outfit',sans-serif;
+}
+.dm-close{background:#6c757d;color:#fff}
+.dm-saapunut{background:#198754;color:#fff}
+.dm-poista{background:#dc3545;color:#fff}
+.dm-lisaa{background:#0d6efd;color:#fff}
+.dm-close:hover{background:#5a6268}
+
+.demo-note{
+  margin-top:1rem;
+  text-align:center;
+  font-size:.75rem;
+  color:var(--faint);
+  font-style:italic;
+}
+</style>
+
+<!-- ═══════════════ HTML ═══════════════ -->
+<div class="demo-section">
+  <div class="container">
+    <div class="demo-intro">
+      <div>
+        <span class="intro-label">Interaktiivinen demo</span>
+        <h2>Näin se toimii käytännössä</h2>
+      </div>
+      <p>Alla on esimerkkinäkymä säilytyspaikoista. Klikkaa mitä tahansa paikkaa — näet saman toiminnon kuin oikeassa järjestelmässä.</p>
+    </div>
+
+    <div class="demo-frame">
+      <!-- Browser chrome -->
+      <div class="demo-bar">
+        <div class="demo-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="demo-url-bar">vaiti-keminmaa.eldarisoft.fi/paikat/peurasaari</div>
+      </div>
+
+      <!-- VAITI UI -->
+      <div class="demo-body">
+        <div class="demo-location-title">Peurasaaren säilytystilat</div>
+
+        <div class="demo-grid" id="demoGrid"></div>
+      </div>
+    </div>
+
+    <p class="demo-note">Demo-näkymä — kaikki nimet ja tiedot ovat kuvitteellisia.</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="demo-modal-overlay" id="demoOverlay">
+  <div class="demo-modal">
+    <h5 id="dmTitle">Paikan tiedot</h5>
+    <div id="dmBody"></div>
+    <div class="demo-modal-footer" id="dmFooter"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ JS ═══════════════ -->
+<script>
+(function(){
+  // Fake slot data — exact structure matching real VAITI
+  const PAIKAT = [
+    {n:1, tyyppi:'kylmiö',   tila:'vapaa'},
+    {n:2, tyyppi:'kylmiö',   tila:'saapunut',  nimi:'Vainaja 1',  ht:'Hautauspalvelu Oy', pvm:'08.04.2025'},
+    {n:3, tyyppi:'kylmiö',   tila:'odottaa',   nimi:'Vainaja 2',  ht:'Pohjolan Hautauspalvelu', pvm:'13.04.2025'},
+    {n:4, tyyppi:'kylmiö',   tila:'vapaa'},
+    {n:5, tyyppi:'kylmiö',   tila:'saapunut',  nimi:'Vainaja 3',  ht:'Hautauspalvelu Oy', pvm:'05.04.2025'},
+    {n:6, tyyppi:'kylmiö',   tila:'vapaa'},
+    {n:7, tyyppi:'kylmiö',   tila:'odottaa',   nimi:'Vainaja 4',  ht:'Lapin Hautaustoimisto', pvm:'14.04.2025'},
+    {n:8, tyyppi:'kylmiö',   tila:'vapaa'},
+    {n:9, tyyppi:'pakastin', tila:'vapaa'},
+    {n:10,tyyppi:'pakastin', tila:'saapunut',  nimi:'Vainaja 5',  ht:'Pohjolan Hautauspalvelu', pvm:'01.04.2025'},
+  ];
+
+  // Render grid
+  const grid = document.getElementById('demoGrid');
+  PAIKAT.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'pk ' + (p.tila === 'vapaa' ? 'vapaa' : p.tila === 'odottaa' ? 'odottaa' : 'saapunut');
+    card.innerHTML = `
+      <div class="pk-num">${p.n}</div>
+      <div class="pk-type">${p.tyyppi}</div>
+      ${p.tila === 'vapaa'
+        ? `<span class="pk-badge badge-success">Vapaa</span>`
+        : `<span class="pk-badge ${p.tila === 'odottaa' ? 'badge-warning' : 'badge-danger'}">
+             ${p.tila === 'odottaa' ? 'Varattu (odottaa)' : 'Varattu (saapunut)'}
+           </span>
+           <div class="pk-name">${p.nimi}</div>
+           <div class="pk-sub">${p.ht}</div>
+           <div class="pk-sub">${p.pvm}</div>`
+      }`;
+    card.addEventListener('click', () => openModal(p));
+    grid.appendChild(card);
+  });
+
+  // Modal
+  const overlay = document.getElementById('demoOverlay');
+  const dmTitle = document.getElementById('dmTitle');
+  const dmBody  = document.getElementById('dmBody');
+  const dmFoot  = document.getElementById('dmFooter');
+
+  function openModal(p){
+    dmTitle.textContent = `Paikka ${p.n} — Peurasaari`;
+    if(p.tila === 'vapaa'){
+      dmBody.innerHTML = `<p>Tila: <strong>Vapaa</strong></p>`;
+      dmFoot.innerHTML = `
+        <button class="dm-btn dm-close" onclick="closeDemoModal()">Sulje</button>
+        <button class="dm-btn dm-lisaa" onclick="closeDemoModal()">Lisää vainaja</button>`;
+    } else {
+      dmBody.innerHTML = `
+        <p>Tila: <strong>${p.tila === 'odottaa' ? 'Varattu — odottaa saapumista' : 'Varattu — saapunut'}</strong></p>
+        <p>Nimi: <strong>${p.nimi}</strong></p>
+        <p>Hautaustoimisto: <strong>${p.ht}</strong></p>
+        <p>Tuontipäivä: <strong>${p.pvm}</strong></p>
+        <p>Saapunut: <strong>${p.tila === 'saapunut' ? 'Kyllä' : 'Ei'}</strong></p>`;
+      dmFoot.innerHTML = `
+        <button class="dm-btn dm-close" onclick="closeDemoModal()">Sulje</button>
+        ${p.tila === 'odottaa' ? `<button class="dm-btn dm-saapunut" onclick="closeDemoModal()">Merkitse saapuneeksi</button>` : ''}
+        <button class="dm-btn dm-poista" onclick="closeDemoModal()">Poista vainaja</button>`;
+    }
+    overlay.classList.add('open');
+  }
+
+  window.closeDemoModal = () => overlay.classList.remove('open');
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeDemoModal(); });
+})();
+</script>
